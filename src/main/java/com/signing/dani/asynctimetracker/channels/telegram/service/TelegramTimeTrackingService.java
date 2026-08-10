@@ -57,6 +57,18 @@ public class TelegramTimeTrackingService {
             return;
         }
 
+
+        java.util.Optional<TimeRecord> ultimoFichaje = timeRecordRepository.findTopByEmployeeIdOrderByTimestampDesc(telegramUserId);
+        
+        if (ultimoFichaje.isPresent() && ultimoFichaje.get().getRecordType().equals(recordType)) {
+            String accionContraria = recordType.equals("ENTRADA") ? "SALIDA" : "ENTRADA";
+            String mensajeError = "⚠️ <b>Operación denegada</b>\n\n"
+                    + "Tu último registro ya fue una <b>" + recordType + "</b>.\n"
+                    + "Debes registrar una <b>" + accionContraria + "</b> antes de volver a fichar.";
+            enviarMensajeConfirmacion(telegramUserId, mensajeError);
+            return; 
+        }
+
         TimeRecord record = new TimeRecord(telegramUserId, LocalDateTime.now(), recordType);
         timeRecordRepository.save(record);
 
