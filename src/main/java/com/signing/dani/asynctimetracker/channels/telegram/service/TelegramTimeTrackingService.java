@@ -1,6 +1,7 @@
 package com.signing.dani.asynctimetracker.channels.telegram.service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,8 +60,24 @@ public class TelegramTimeTrackingService {
         TimeRecord record = new TimeRecord(telegramUserId, LocalDateTime.now(), recordType);
         timeRecordRepository.save(record);
 
-        System.out.println("Fichaje registrado: " + recordType + " para el usuario " + telegramUserId);
-        enviarMensajeConfirmacion(telegramUserId, "Fichaje de " + recordType + " registrado con éxito \u2705");
+       System.out.println("Fichaje registrado: " + recordType + " para el usuario " + telegramUserId);
+
+        LocalDateTime ahora = LocalDateTime.now();
+        DateTimeFormatter formatterFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formatterHora = DateTimeFormatter.ofPattern("HH:mm");
+
+        String icono = recordType.equals("ENTRADA") ? "🟢" : "🔴";
+        String textoMensaje = icono + " <b>" + recordType + " REGISTRADA</b>\n"
+                + "👤 <b>ID Empleado:</b> " + telegramUserId + "\n"
+                + "📅 <b>Fecha:</b> " + ahora.format(formatterFecha) + "\n"
+                + "🕒 <b>Hora oficial:</b> " + ahora.format(formatterHora) + "h\n\n"
+                + "<i>⚙️ Procesado por el backend de Daniel Catalin</i>";
+
+        if (recordType.equals("SALIDA")) {
+            textoMensaje += "\n\n¡Buen trabajo hoy! Nos vemos en el próximo turno. 👋";
+        }
+
+        enviarMensajeConfirmacion(telegramUserId, textoMensaje);
     }
 
     @PostConstruct
