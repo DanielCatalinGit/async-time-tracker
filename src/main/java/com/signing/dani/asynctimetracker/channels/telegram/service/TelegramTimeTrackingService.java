@@ -62,13 +62,16 @@ public class TelegramTimeTrackingService {
 
        System.out.println("Fichaje registrado: " + recordType + " para el usuario " + telegramUserId);
 
+        String firstName = update.getMessage().getChat().getFirstName();
+        String nombreEmpleado = (firstName != null && !firstName.isEmpty()) ? firstName : "Empleado"; 
+
         LocalDateTime ahora = LocalDateTime.now();
         DateTimeFormatter formatterFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         DateTimeFormatter formatterHora = DateTimeFormatter.ofPattern("HH:mm");
 
         String icono = recordType.equals("ENTRADA") ? "🟢" : "🔴";
         String textoMensaje = icono + " <b>" + recordType + " REGISTRADA</b>\n"
-                + "👤 <b>ID Empleado:</b> " + telegramUserId + "\n"
+                + "👤 <b>Empleado:</b> " + nombreEmpleado + " (ID: " + telegramUserId + ")\n"
                 + "📅 <b>Fecha:</b> " + ahora.format(formatterFecha) + "\n"
                 + "🕒 <b>Hora oficial:</b> " + ahora.format(formatterHora) + "h\n\n"
                 + "<i>⚙️ Procesado por el backend de Daniel Catalin</i>";
