@@ -64,7 +64,7 @@ public class TelegramTimeTrackingService {
     @PostConstruct
     public void autoRegisterWebhook() {
         if (appPublicUrl == null || appPublicUrl.isEmpty()) {
-            System.out.println(" No hay URL pública configurada. Se omite el auto-registro del webhook.");
+            System.out.println("No hay URL pública configurada. Se omite el auto-registro del webhook.");
             return;
         }
 
@@ -73,7 +73,7 @@ public class TelegramTimeTrackingService {
         
         try {
             restTemplate.getForObject(url, String.class);
-            System.out.println("✅ Webhook de Telegram auto-registrado en: " + appPublicUrl);
+            System.out.println("Webhook de Telegram auto-registrado en: " + appPublicUrl);
         } catch (Exception e) {
             System.err.println("Error al registrar el webhook: " + e.getMessage());
         }
@@ -86,6 +86,7 @@ public class TelegramTimeTrackingService {
         Map<String, String> payload = new HashMap<>();
         payload.put("chat_id", chatId);
         payload.put("text", textoMensaje);
+        payload.put("parse_mode", "HTML");
 
         try {
             restTemplate.postForObject(url, payload, String.class);
@@ -101,6 +102,7 @@ public class TelegramTimeTrackingService {
         Map<String, Object> payload = new HashMap<>();
         payload.put("chat_id", chatId);
         payload.put("text", textoMensaje);
+        payload.put("parse_mode", "HTML");
 
         Map<String, Object> replyKeyboardMarkup = new HashMap<>();
         Map<String, Object> botonEntrada = new HashMap<>();
