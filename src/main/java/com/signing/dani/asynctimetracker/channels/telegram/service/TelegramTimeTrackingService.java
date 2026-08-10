@@ -39,18 +39,20 @@ public class TelegramTimeTrackingService {
         String telegramUserId = String.valueOf(update.getMessage().getChat().getId());
 
         if (text.equals("/start") || text.equals("/fichar")) {
-            enviarPanelDeFichaje(telegramUserId, "📅 Selecciona una opción en el menú inferior:");
+            String mensajeBienvenida = "<b>Bienvenido al portal del empleado</b> 🏢\n\n"
+                    + "Por favor, selecciona una opción en el menú inferior para registrar tu jornada:";
+            enviarPanelDeFichaje(telegramUserId, mensajeBienvenida);
             return;
         }
 
         String recordType;
 
-        if (text.equals("🟢 Fichar Entrada") || text.toLowerCase().contains("entrada")) {
+      if (text.equals("🟢 Fichar Entrada") || text.toLowerCase().contains("entrada")) {
             recordType = "ENTRADA";
         } else if (text.equals("🔴 Fichar Salida") || text.toLowerCase().contains("salida")) {
             recordType = "SALIDA";
         } else {
-            enviarPanelDeFichaje(telegramUserId, "⚠️ Usa los botones del teclado inferior para fichar.");
+            enviarPanelDeFichaje(telegramUserId, "⚠️ <i>Comando no reconocido.</i>\nUsa los botones del teclado inferior para fichar.");
             return;
         }
 
