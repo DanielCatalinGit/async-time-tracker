@@ -13,6 +13,8 @@ import com.signing.dani.asynctimetracker.channels.telegram.dto.TelegramUpdate;
 import com.signing.dani.asynctimetracker.core.model.TimeRecord;
 import com.signing.dani.asynctimetracker.core.repository.TimeRecordRepository;
 
+import jakarta.annotation.PostConstruct;
+
 @Service
 public class TelegramTimeTrackingService {
 
@@ -20,6 +22,9 @@ public class TelegramTimeTrackingService {
 
     @Value("${telegram.bot.token}")
     private String botToken;
+
+    @Value("${app.public.url}")
+    private String appPublicUrl;
 
     public TelegramTimeTrackingService(TimeRecordRepository timeRecordRepository) {
         this.timeRecordRepository = timeRecordRepository;
@@ -54,6 +59,24 @@ public class TelegramTimeTrackingService {
 
         System.out.println("Fichaje registrado: " + recordType + " para el usuario " + telegramUserId);
         enviarMensajeConfirmacion(telegramUserId, "Fichaje de " + recordType + " registrado con éxito \u2705");
+    }
+
+    @PostConstruct
+    public void autoRegisterWebhook() {
+        if (appPublicUrl == null || appPublicUrl.isEmpty()) {
+            System.out.println(" No hay URL pública configurada. Se omite el auto-registro del webhook.");
+            return;
+        }
+
+        String url = "https://api.telegram.org/bot" + botToken + "/setWebhook?url=" + appPublicUrl + "/api/webhook/telegram";
+        RestTemplate restTemplate = new RestTemplate();
+        
+        try {
+            restTemplate.getForObject(url, String.class);
+            System.out.println("✅ Webhook de Telegram auto-registrado en: " + appPublicUrl);
+        } catch (Exception e) {
+            System.err.println("Error al registrar el webhook: " + e.getMessage());
+        }
     }
 
     private void enviarMensajeConfirmacion(String chatId, String textoMensaje) {
